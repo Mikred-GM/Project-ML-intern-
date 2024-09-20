@@ -1,0 +1,30 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+class Draw:
+    def draw_plots(self, df):
+        
+        colm = list(df.columns)
+
+        plots_dir = Path("plots")
+        if not plots_dir.exists():
+            plots_dir.mkdir()
+        
+        if colm[0].isalpha():
+            colm = colm[1:]
+    
+        for col in colm:
+            fig, ax = plt.subplots()
+            df[col].plot(ax=ax, kind='bar')
+            ax.set_title(f'Comparison of Column "{col}"')
+            ax.set_xlabel('Values')
+            ax.set_ylabel('Count')
+            plot_path = plots_dir / f"{col}.png"
+            fig.savefig(str(plot_path))
+    
+        return [str(p) for p in plots_dir.glob('*.png')]
+
+df = pd.read_json("https://ai-process-sandy.s3.eu-west-1.amazonaws.com/purge/deviation.json")
+output_paths = Draw().draw_plots(df)
+print(output_paths)
